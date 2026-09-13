@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart3,
   TrendingUp,
@@ -32,6 +32,11 @@ import { useDashboard } from '../../lib/store';
 export default function AnalyticsPage() {
   const { cleaners } = useDashboard();
   const [timeRange, setTimeRange] = useState<'Daily' | 'Weekly' | 'Monthly' | '6-Month'>('Monthly');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Bar Chart Data: Points vs Completed Cleanings
   const barChartData = cleaners.map(c => ({
@@ -104,17 +109,21 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
-                />
-                <Bar dataKey="points" fill="#06b6d4" radius={[6, 6, 0, 0]} name="Points" />
-                <Bar dataKey="completed" fill="#10b981" radius={[6, 6, 0, 0]} name="Completed Tasks" />
-              </BarChart>
-            </ResponsiveContainer>
+            {isMounted ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
+                  />
+                  <Bar dataKey="points" fill="#06b6d4" radius={[6, 6, 0, 0]} name="Points" />
+                  <Bar dataKey="completed" fill="#10b981" radius={[6, 6, 0, 0]} name="Completed Tasks" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs text-slate-500 font-mono">Loading Chart...</div>
+            )}
           </div>
         </div>
 
@@ -128,22 +137,26 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorClean" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
-                />
-                <Area type="monotone" dataKey="cleanings" stroke="#10b981" fillOpacity={1} fill="url(#colorClean)" name="Total Cleanings" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {isMounted ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorClean" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" stroke="#94a3b8" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
+                  />
+                  <Area type="monotone" dataKey="cleanings" stroke="#10b981" fillOpacity={1} fill="url(#colorClean)" name="Total Cleanings" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs text-slate-500 font-mono">Loading Trend...</div>
+            )}
           </div>
         </div>
       </div>
@@ -159,17 +172,21 @@ export default function AnalyticsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
           <div className="h-72 w-full lg:col-span-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={11} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#475569" fontSize={10} />
-                <Radar name="Rajesh Kumar (Gold)" dataKey="CleanerA" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.3} />
-                <Radar name="Priya Sharma (Silver)" dataKey="CleanerB" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} />
-                <Radar name="Vikram Singh (Legend)" dataKey="CleanerC" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-                <Legend />
-              </RadarChart>
-            </ResponsiveContainer>
+            {isMounted ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                  <PolarGrid stroke="#334155" />
+                  <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={11} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#475569" fontSize={10} />
+                  <Radar name="Rajesh Kumar (Gold)" dataKey="CleanerA" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.3} />
+                  <Radar name="Priya Sharma (Silver)" dataKey="CleanerB" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.3} />
+                  <Radar name="Vikram Singh (Legend)" dataKey="CleanerC" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+                  <Legend />
+                </RadarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs text-slate-500 font-mono">Loading Radar...</div>
+            )}
           </div>
 
           <div className="space-y-3 bg-slate-950/60 p-4 rounded-2xl border border-slate-800 text-xs">
