@@ -85,7 +85,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Monitored Restrooms */}
         <div className="glass-panel p-4 rounded-2xl border border-slate-800/80 flex items-center justify-between">
           <div>
@@ -212,16 +212,16 @@ export default function DashboardPage() {
             {recentPackets.slice(0, 5).map((pkt) => (
               <div
                 key={pkt.id}
-                className="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl flex items-center justify-between text-xs font-mono"
+                className="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono"
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
                   <div>
                     <span className="text-cyan-300 font-bold">{pkt.hardwareId}</span>
                     <span className="text-slate-400 text-[11px] ml-2">({pkt.restroomName})</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-slate-300 text-[11px]">
+                <div className="flex flex-wrap items-center gap-3 text-slate-300 text-[11px]">
                   <span>Ammonia: <strong className="text-emerald-400">{pkt.ammoniaPpm} PPM</strong></span>
                   <span>Odor: <strong className="text-purple-400">{pkt.odorIndex}/10</strong></span>
                   <span className="text-slate-500">{pkt.timestamp}</span>

@@ -15,13 +15,22 @@ import {
   History,
   FileSpreadsheet,
   ShieldCheck,
-  Zap
+  Zap,
+  X
 } from 'lucide-react';
 import { useDashboard } from '../lib/store';
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
-  const { alerts, escalations, tickets, loraDevices, cleaners } = useDashboard();
+  const {
+    alerts,
+    escalations,
+    tickets,
+    loraDevices,
+    cleaners,
+    isMobileMenuOpen,
+    closeMobileMenu
+  } = useDashboard();
 
   const activeAlertsCount = alerts.filter(a => !a.resolved).length;
   const activeEscalationsCount = escalations.filter(e => e.status !== 'Resolved').length;
@@ -94,69 +103,159 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-64 glass-panel border-r border-slate-800 shrink-0 hidden md:flex flex-col justify-between h-screen sticky top-0 z-30">
-      <div>
-        {/* Brand Header */}
-        <div className="p-5 border-b border-slate-800/80 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 p-0.5 shadow-glow-cyan flex items-center justify-center">
-            <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <Zap className="w-5 h-5 text-cyan-400 animate-pulse" />
+    <>
+      {/* Desktop Sidebar (Fixed) */}
+      <aside className="w-64 glass-panel border-r border-slate-800 shrink-0 hidden md:flex flex-col justify-between h-screen sticky top-0 z-30">
+        <div>
+          {/* Brand Header */}
+          <div className="p-5 border-b border-slate-800/80 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 p-0.5 shadow-glow-cyan flex items-center justify-center">
+              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                <Zap className="w-5 h-5 text-cyan-400 animate-pulse" />
+              </div>
+            </div>
+            <div>
+              <h1 className="font-bold text-[17px] tracking-wide text-white flex items-center gap-0.5">
+                Shuddhi<span className="text-cyan-400 font-extrabold">Q</span>
+              </h1>
+              <p className="text-[10px] text-slate-400 font-mono tracking-wider uppercase">Central LoRa Matrix</p>
             </div>
           </div>
-          <div>
-            <h1 className="font-bold text-[17px] tracking-wide text-white flex items-center gap-0.5">
-              Shuddhi<span className="text-cyan-400 font-extrabold">Q</span>
-            </h1>
-            <p className="text-[10px] text-slate-400 font-mono tracking-wider uppercase">Central LoRa Matrix</p>
-          </div>
+
+          {/* Nav Links */}
+          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-160px)]">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 group ${
+                    isActive
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-emerald-500/10 text-cyan-300 border border-cyan-500/30 shadow-glow-cyan/20'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-cyan-400' : 'text-slate-500'}`} />
+                    <span>{item.name}</span>
+                  </div>
+                  {item.badge && (
+                    <span
+                      className={`px-2 py-0.5 text-[10px] rounded-full border font-mono ${
+                        item.badgeColor || 'bg-slate-800 text-slate-400 border-slate-700'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Nav Links */}
-        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-160px)]">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
+        {/* System Status Footer */}
+        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
+          <div className="flex items-center justify-between text-[11px] text-slate-400">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="font-mono text-emerald-400 font-semibold">LORA GATEWAY ACTIVE</span>
+            </div>
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1 font-mono">FW: v4.8.2 | 868.1 MHz</p>
+        </div>
+      </aside>
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-emerald-500/10 text-cyan-300 border border-cyan-500/30 shadow-glow-cyan/20'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-                }`}
-              >
+      {/* Mobile Navigation Slide-Out Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity"
+            onClick={closeMobileMenu}
+          />
+
+          {/* Drawer Content Panel */}
+          <div className="relative w-4/5 max-w-xs bg-slate-900 border-r border-slate-800 h-full flex flex-col justify-between shadow-2xl z-10 transition-transform duration-300">
+            <div>
+              {/* Mobile Drawer Header */}
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${isActive ? 'text-cyan-400' : 'text-slate-500'}`} />
-                  <span>{item.name}</span>
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 p-0.5 shadow-glow-cyan flex items-center justify-center">
+                    <div className="w-full h-full bg-slate-950 rounded-[8px] flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-cyan-400 animate-pulse" />
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-base text-white">
+                      Shuddhi<span className="text-cyan-400 font-extrabold">Q</span>
+                    </h2>
+                    <p className="text-[9px] text-slate-400 font-mono tracking-wider uppercase">LoRa Mobile Matrix</p>
+                  </div>
                 </div>
-                {item.badge && (
-                  <span
-                    className={`px-2 py-0.5 text-[10px] rounded-full border font-mono ${
-                      item.badgeColor || 'bg-slate-800 text-slate-400 border-slate-700'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
 
-      {/* System Status Footer */}
-      <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
-        <div className="flex items-center justify-between text-[11px] text-slate-400">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span className="font-mono text-emerald-400 font-semibold">LORA GATEWAY ACTIVE</span>
+                <button
+                  onClick={closeMobileMenu}
+                  className="p-1.5 rounded-lg bg-slate-800/80 text-slate-400 hover:text-white"
+                  aria-label="Close menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Mobile Nav Links */}
+              <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)]">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeMobileMenu}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                        isActive
+                          ? 'bg-gradient-to-r from-cyan-500/20 to-emerald-500/10 text-cyan-300 border border-cyan-500/30 shadow-glow-cyan/20'
+                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-500'}`} />
+                        <span>{item.name}</span>
+                      </div>
+                      {item.badge && (
+                        <span
+                          className={`px-2 py-0.5 text-[9px] rounded-full border font-mono ${
+                            item.badgeColor || 'bg-slate-800 text-slate-400 border-slate-700'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Mobile Footer Status */}
+            <div className="p-4 border-t border-slate-800 bg-slate-950/60">
+              <div className="flex items-center justify-between text-[11px] text-slate-400">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span className="font-mono text-emerald-400 font-semibold text-[10px]">GATEWAY ONLINE</span>
+                </div>
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              </div>
+            </div>
           </div>
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
         </div>
-        <p className="text-[10px] text-slate-500 mt-1 font-mono">FW: v4.8.2 | 868.1 MHz</p>
-      </div>
-    </aside>
+      )}
+    </>
   );
 };

@@ -84,7 +84,7 @@ export default function CleanersPage() {
           Registered Cleaner Roster ({cleaners.length})
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cleaners.map((cleaner) => {
             const hasCheckedIn = attendanceRecords.some(a => a.cleanerId === cleaner.id && !a.checkOutTime);
 
@@ -199,7 +199,7 @@ export default function CleanersPage() {
       {/* Create Cleaner ID Modal */}
       {isAddCleanerModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-          <div className="glass-panel w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative">
+          <div className="glass-panel w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setIsAddCleanerModalOpen(false)}
               className="absolute top-5 right-5 p-2 text-slate-400 hover:text-white rounded-full bg-slate-800/60"

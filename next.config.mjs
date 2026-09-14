@@ -4,7 +4,6 @@ const basePath = process.env.NODE_ENV === 'production' ? '/ShuddhiQ' : '';
 const nextConfig = {
   output: 'export',
   basePath: basePath,
-  assetPrefix: basePath ? `${basePath}/` : undefined,
   images: {
     unoptimized: true,
   },

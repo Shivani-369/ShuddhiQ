@@ -12,7 +12,10 @@ import {
   ChevronDown,
   AlertTriangle,
   RefreshCw,
-  ShieldAlert
+  ShieldAlert,
+  Menu,
+  X,
+  Zap
 } from 'lucide-react';
 import { useDashboard } from '../lib/store';
 
@@ -23,7 +26,9 @@ export const Header: React.FC = () => {
     alerts,
     isLoRaSimulating,
     toggleLoRaSimulation,
-    recentPackets
+    recentPackets,
+    isMobileMenuOpen,
+    toggleMobileMenu
   } = useDashboard();
 
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -48,15 +53,36 @@ export const Header: React.FC = () => {
   const latestPacket = recentPackets[0];
 
   return (
-    <header className="h-16 glass-panel border-b border-slate-800 sticky top-0 z-20 px-6 flex items-center justify-between">
-      {/* Left: Search & Live Clock */}
-      <div className="flex items-center gap-6">
+    <header className="h-16 glass-panel border-b border-slate-800 sticky top-0 z-20 px-3 sm:px-6 flex items-center justify-between">
+      {/* Left: Mobile Menu Toggle, Brand Logo & Live Clock */}
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Mobile Hamburger Menu Toggle Button */}
+        <button
+          onClick={toggleMobileMenu}
+          className="md:hidden p-2 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-200 hover:text-cyan-400 focus:outline-none transition"
+          aria-label="Toggle Mobile Navigation Menu"
+        >
+          {isMobileMenuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
+        </button>
+
+        {/* Mobile Brand Logo Header */}
+        <div className="flex md:hidden items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-emerald-500 p-0.5 flex items-center justify-center">
+            <div className="w-full h-full bg-slate-950 rounded-[6px] flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+            </div>
+          </div>
+          <h1 className="font-bold text-sm tracking-wide text-white">
+            Shuddhi<span className="text-cyan-400 font-extrabold">Q</span>
+          </h1>
+        </div>
+
         {/* Live Computer Clock Display */}
-        <div className="flex items-center gap-3 bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-slate-800 shadow-inner">
-          <Clock className="w-4 h-4 text-cyan-400 animate-pulse" />
+        <div className="hidden xs:flex sm:flex items-center gap-2 sm:gap-3 bg-slate-900/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl border border-slate-800 shadow-inner">
+          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 animate-pulse shrink-0" />
           <div className="flex flex-col">
-            <span className="font-mono text-xs font-bold text-white tracking-widest">{currentTime || '16:02:41'}</span>
-            <span className="text-[10px] text-slate-400">{currentDate}</span>
+            <span className="font-mono text-[11px] sm:text-xs font-bold text-white tracking-widest">{currentTime || '16:02:41'}</span>
+            <span className="text-[9px] sm:text-[10px] text-slate-400 hidden sm:block">{currentDate}</span>
           </div>
         </div>
 

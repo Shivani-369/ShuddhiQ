@@ -51,8 +51,11 @@ interface DashboardContextType {
   auditLogs: AuditLogEntry[];
   recentPackets: LoRaPacket[];
   isLoRaSimulating: boolean;
+  isMobileMenuOpen: boolean;
 
   // Actions
+  toggleMobileMenu: () => void;
+  closeMobileMenu: () => void;
   toggleLoRaSimulation: () => void;
   relocateDevice: (deviceId: string, newRestroomId: string, newLocationName: string) => void;
   updateThresholds: (newConfig: Partial<ThresholdConfig>) => void;
@@ -98,6 +101,10 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
   const [recentPackets, setRecentPackets] = useState<LoRaPacket[]>([]);
   const [isLoRaSimulating, setIsLoRaSimulating] = useState<boolean>(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   // Initialize 60-day audit log on client mount
   useEffect(() => {
@@ -566,6 +573,9 @@ export const DashboardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         auditLogs,
         recentPackets,
         isLoRaSimulating,
+        isMobileMenuOpen,
+        toggleMobileMenu,
+        closeMobileMenu,
         toggleLoRaSimulation,
         relocateDevice,
         updateThresholds,
